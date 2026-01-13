@@ -11,7 +11,7 @@ import SwiftUI
 struct TodoPraticeApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            TodoListView()
         }
     }
 }
