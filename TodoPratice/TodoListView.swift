@@ -11,6 +11,17 @@ struct TodoListView: View {
     
     @StateObject private var viewModel = TodoListViewModel()
     @State private var showNewSheet = false
+    @State private var searchText = ""
+    
+    var filteredTodos: [TodoItem] {
+        if searchText.isEmpty {
+            return viewModel.todos
+        } else {
+            return viewModel.todos.filter {
+                $0.title.localizedCaseInsensitiveContains(searchText)
+            }
+        }
+    }
     
     var body: some View {
 //        VStack {
@@ -61,5 +72,7 @@ struct TodoListView: View {
             }
             
         }
+        .navigationTitle("Todo")
+        .searchable(text: $searchText, prompt: "할 일 검색")
     }
 }
