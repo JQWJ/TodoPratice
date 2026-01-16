@@ -9,12 +9,13 @@ import SwiftUI
 
 struct TodoRowView: View {
     
-    @Binding var todo: TodoItem
+    let todo: TodoItem
+    let onToggle: () -> Void
     
     var body: some View {
         HStack {
             Button {
-                todo.isDone.toggle()
+                onToggle()
             } label: {
                 Image(systemName: todo.isDone ? "checkmark.circle.fill" : "circle")
             }
