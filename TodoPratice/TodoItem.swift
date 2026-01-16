@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-struct TodoItem: Identifiable {
-    let id = UUID()
+struct TodoItem: Identifiable, Codable {
+    let id: UUID
     var title: String
     var isDone: Bool
 }
