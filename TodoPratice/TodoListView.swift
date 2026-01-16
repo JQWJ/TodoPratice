@@ -13,14 +13,43 @@ struct TodoListView: View {
     @State private var showNewSheet = false
     
     var body: some View {
+//        VStack {
+//            Picker("Filter", selection: $viewModel.filter) {
+//                ForEach(TodoFilter.allCases) { filter in
+//                    Text(filter.rawValue)
+//                        .tag(filter)
+//                }
+//            }
+//            .pickerStyle(.segmented)
+//            .padding()
+//        }
+        // 네비게이션 바깥에 생성하기
+        
         NavigationStack {
             List {
-                ForEach($viewModel.todos) { $todo in
-                    TodoRowView(todo: $todo)
+                ForEach(filteredTodos) { todo in
+                    TodoRowView(
+                        todo: todo,
+                            onToggle: {
+                        viewModel.toggledone(todo)
+                            }
+                    )
                 }
                 .onDelete { viewModel.delete(at: $0) }
+                
             }
+            
             .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Picker("Filter", selection: $viewModel.filter) {
+                        ForEach(TodoFilter.allCases) { filter in
+                            Text(filter.rawValue)
+                                .tag(filter)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .frame(maxWidth: 300)
+                }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Add") {
                         showNewSheet = true
