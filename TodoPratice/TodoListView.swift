@@ -12,28 +12,44 @@ struct TodoListView: View {
     @StateObject private var viewModel = TodoListViewModel()
     @State private var showNewSheet = false
     @State private var searchText = ""
+    @State private var selectedFilter: TodoFilter = .all
+    
+    enum TodoFilter: String, CaseIterable {
+        case all = "전체"
+        case active = "미완료"
+        case completed = "완료"
+    }
     
     var filteredTodos: [TodoItem] {
-        if searchText.isEmpty {
-            return viewModel.todos
-        } else {
-            return viewModel.todos.filter {
-                $0.title.localizedCaseInsensitiveContains(searchText)
+        viewModel.todos
+        // 완료/미완료 필터
+            .filter { todo in
+                switch selectedFilter {
+                case .all:
+                    return true
+                case .active:
+                    return todo.isDone == false
+                case .completed:
+                    return todo.isDone == true
+                }
             }
-        }
+            .filter { todo in
+                searchText.isEmpty ||
+                todo.title.localizedCaseInsensitiveContains(searchText)
+            }
     }
     
     var body: some View {
-//        VStack {
-//            Picker("Filter", selection: $viewModel.filter) {
-//                ForEach(TodoFilter.allCases) { filter in
-//                    Text(filter.rawValue)
-//                        .tag(filter)
-//                }
-//            }
-//            .pickerStyle(.segmented)
-//            .padding()
-//        }
+        VStack {
+            Picker("Filter", selection: $selectedFilter) {
+        ForEach(TodoFilter.allCases, id: \.self) { filter in
+            Text(filter.rawValue)
+                .tag(filter)
+        }
+    }
+    .pickerStyle(.segmented)
+    .padding(.horizontal)
+        }
         // 네비게이션 바깥에 생성하기
         
         NavigationStack {
@@ -47,20 +63,19 @@ struct TodoListView: View {
                     )
                 }
                 .onDelete { viewModel.delete(at: $0) }
-                
             }
             
             .toolbar {
-                ToolbarItem(placement: .principal) {
-                    Picker("Filter", selection: $viewModel.filter) {
-                        ForEach(TodoFilter.allCases) { filter in
-                            Text(filter.rawValue)
-                                .tag(filter)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-                    .frame(maxWidth: 300)
-                }
+//                ToolbarItem(placement: .principal) {
+//                    Picker("Filter", selection: $selectedFilter) {
+//                        ForEach(TodoFilter.allCases, id: \.self) { filter in
+//                            Text(filter.rawValue)
+//                                .tag(filter)
+//                        }
+//                    }
+//                    .pickerStyle(.segmented)
+//                    .padding(.horizontal)
+//                }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Add") {
                         showNewSheet = true
