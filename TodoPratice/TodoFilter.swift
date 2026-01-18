@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-enum TodoFilter: String, CaseIterable, Identifiable {
+enum TodoFilter: String, CaseIterable, Identifiable, Equatable {
     case all = "All"
     case done = "Done"
     case todo = "Todo"

@@ -14,13 +14,20 @@ struct TodoRowView: View {
     
     var body: some View {
         HStack {
-            Button {
-                onToggle()
-            } label: {
                 Image(systemName: todo.isDone ? "checkmark.circle.fill" : "circle")
-            }
+                    .foregroundColor(todo.isDone ? .green : .gray)
+                    .onTapGesture {
+                        withAnimation(.spring()) {
+                            onToggle()
+                        }
+                    }
+        
             Text(todo.title)
                 .strikethrough(todo.isDone)
+                .foregroundColor(todo.isDone ? .gray : .primary)
+            
+            Spacer()
         }
+        .padding(.vertical, 4)
     }
 }
