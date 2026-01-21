@@ -15,18 +15,88 @@ final class TodoListViewModel: ObservableObject {
             saveTodos()
         }
     }
-    
+    @State var searchText = ""
     @Published var filter: TodoFilter = .all
     
-    var filteredTodos: [TodoItem] {
-        switch filter {
-        case .all:
-            return todos
-        case .done:
-            return todos.filter {$0.isDone}
-        case .todo:
-            return todos.filter {!$0.isDone}
-        }
+    // 미완료
+    var activeTodos: [TodoItem] {
+        filteredTodos.filter { !$0.isDone }
+    }
+    
+    var completedTodos: [TodoItem] {
+        filteredTodos.filter { $0.isDone }
+    }
+    
+    enum TodoFilter: String, CaseIterable {
+        case all = "전체"
+        case active = "미완료"
+        case completed = "완료"
+    }
+    
+    private var filteredTodos: [TodoItem] {
+        todos
+            .filter { todo in
+                switch filter {
+                case .all:
+                    return true
+                case .active:
+                    return !todo.isDone
+                case .completed:
+                    return todo.isDone
+                }
+            }
+            .filter {
+                searchText.isEmpty ||
+                $0.title.localizedCaseInsensitiveContains(searchText)
+            }
+    }
+    
+//    var visibleTodos: [TodoItem] {
+//        todos
+//        // 완료,미완료 필터
+//            .filter { todo in
+//                switch filter {
+//                case .all:
+//                    return true
+//                case .active:
+//                    return !todo.isDone
+//                case .completed:
+//                    return todo.isDone
+//                }
+//            }
+//            .filter {
+//                searchText.isEmpty ||
+//                $0.title.localizedCaseInsensitiveContains(searchText)
+//            }
+//            .sorted {
+//                !$0.isDone == false && $1.isDone == true
+//            }
+//    }
+    
+    func sortedTodos(
+        filter: TodoFilter,
+        searchText: String
+    ) -> [TodoItem] {
+        todos
+            .filter { todo in
+                switch filter {
+                case .all:
+                    return true
+                case .active:
+                    return !todo.isDone
+                case .completed:
+                    return todo.isDone
+                }
+            }
+        
+            .filter {
+                searchText.isEmpty ||
+                $0.title.localizedCaseInsensitiveContains(searchText)
+            }
+        
+            .sorted {
+                !$0.isDone && $1.isDone
+            }
     }
     
     private let saveKey = "todos_key"
