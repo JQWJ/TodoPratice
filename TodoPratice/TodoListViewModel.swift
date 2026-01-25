@@ -8,6 +8,12 @@
 import SwiftUI
 import Combine
 
+enum TodoFilter: String, CaseIterable {
+    case all = "전체"
+    case active = "미완료"
+    case completed = "완료"
+}
+
 final class TodoListViewModel: ObservableObject {
     
     @Published var todos: [TodoItem] = [] {
@@ -15,8 +21,10 @@ final class TodoListViewModel: ObservableObject {
             saveTodos()
         }
     }
-    @State var searchText = ""
+    
+    @Published var searchText: String = ""
     @Published var filter: TodoFilter = .all
+    @Published var isCompletedExpanded: Bool = true
     
     // 미완료
     var activeTodos: [TodoItem] {
@@ -26,12 +34,7 @@ final class TodoListViewModel: ObservableObject {
     var completedTodos: [TodoItem] {
         filteredTodos.filter { $0.isDone }
     }
-    
-    enum TodoFilter: String, CaseIterable {
-        case all = "전체"
-        case active = "미완료"
-        case completed = "완료"
-    }
+
     
     private var filteredTodos: [TodoItem] {
         todos
@@ -72,6 +75,12 @@ final class TodoListViewModel: ObservableObject {
 //                !$0.isDone == false && $1.isDone == true
 //            }
 //    }
+    
+    private func sortTodos() {
+        todos.sort { lhs, rhs in
+            lhs.isDone == false && rhs.isDone == true
+        }
+    }
     
     func sortedTodos(
         filter: TodoFilter,
@@ -130,8 +139,9 @@ final class TodoListViewModel: ObservableObject {
     }
     
     func toggledone(_ todo: TodoItem) {
-        guard let index = todos.firstIndex(where: {$0.id == todo.id }) else {return}
-        todos[index].isDone.toggle()
+            guard let index = todos.firstIndex(where: {$0.id == todo.id }) else {return}
+            todos[index].isDone.toggle()
+        todos.sort { !$0.isDone && $1.isDone}
     }
 // 위 펑션은 RowView에서 바인딩이 아닌 뷰모델로 받아왔을 때 사용하는 함수
 }
