@@ -23,11 +23,11 @@ struct TodoListView: View {
                 }
                 .pickerStyle(.segmented)
                 .padding(.horizontal)
-                
+
                 .navigationTitle("Todo")
                 .searchable(text: $viewModel.searchText, prompt: "할 일 검색")
-                
-                if viewModel.activeTodos.isEmpty && viewModel.completedTodos.isEmpty {
+
+                if viewModel.visibleTodos.isEmpty {
                     ContentUnavailableView(
                         viewModel.searchText.isEmpty ? "할 일이 없음" : "검색 결과 없음",
                         systemImage: viewModel.searchText.isEmpty ? "tray" : "magnifyingglass",
@@ -37,52 +37,21 @@ struct TodoListView: View {
                     )
                 } else {
                     List {
-                        if !viewModel.activeTodos.isEmpty {
-                            Section("미완료") {
-                                ForEach(viewModel.activeTodos) { todo in
-                                    TodoRowView(todo: todo) {
-                                        viewModel.toggledone(todo)
-                                    }
-                                }
-                            }
-                        }
-                        
-                        if !viewModel.completedTodos.isEmpty {
-                            Section {
-                                if viewModel.isCompletedExpanded {
-                                    ForEach(viewModel.completedTodos) { todo in
-                                        TodoRowView(todo: todo) {
-                                            viewModel.toggledone(todo)
-                                        }
-                                    }
-                                }
-                            } header: {
-                                Button {
-                                    withAnimation(.easeInOut) {
-                                        viewModel.isCompletedExpanded.toggle()
-                                    }
-                                } label: {
-                                    HStack {
-                                        Text("완료")
-                                        
-                                        Spacer()
-                                        
-                                        Image(systemName: viewModel.isCompletedExpanded ? "chevron.down" : "chevron.right")
-                                    }
-                                }
+                        ForEach(viewModel.visibleTodos) { todo in
+                            TodoRowView(todo: todo) {
+                                viewModel.toggledone(todo)
                             }
                         }
                     }
-                    
-                    .toolbar {
-                        ToolbarItem(placement: .topBarTrailing) {
-                            Button("Add") {
-                                showNewSheet = true
-                            }
-                            .sheet(isPresented: $showNewSheet) {
-                                AddTodoView(viewModel: viewModel)
-                            }
-                        }
+                }
+            }
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Add") {
+                        showNewSheet = true
+                    }
+                    .sheet(isPresented: $showNewSheet) {
+                        AddTodoView(viewModel: viewModel)
                     }
                 }
             }
