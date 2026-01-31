@@ -22,7 +22,7 @@ enum TodoPriority: Int, Codable, CaseIterable {
     }
 }
 
-struct TodoItem: Identifiable, Codable {
+struct TodoItem: Identifiable, Codable, Equatable {
     let id: UUID
     var title: String
     var isDone: Bool
