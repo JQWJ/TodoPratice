@@ -13,23 +13,34 @@ struct TodoRowView: View {
     let onToggle: () -> Void
     
     var body: some View {
-        HStack {
-                Image(systemName: todo.isDone ? "checkmark.circle.fill" : "circle")
-                .scaleEffect(todo.isDone ? 1.1 : 1.0)
-                .animation(.spring(), value: todo.isDone)
-                    .foregroundColor(todo.isDone ? .green : .gray)
-                    .onTapGesture {
-                        withAnimation(.spring()) {
-                            onToggle()
-                        }
-                    }
-        
+        HStack(spacing: 8) {
+                
+            // 우선순위 컬러 바
+            Rectangle()
+                .fill(priorityColor)
+                .frame(width: 4)
+                .cornerRadius(2)
+            
             Text(todo.title)
                 .strikethrough(todo.isDone)
-                .foregroundColor(todo.isDone ? .gray : .primary)
+                .foregroundColor(todo.isDone ? .secondary : .primary)
             
             Spacer()
+            
+            Image(systemName: todo.isDone ? "checkmark.circle.fill" : "circle")
+                .foregroundColor(todo.isDone ? .green : .gray)
+                .onTapGesture {
+                    onToggle()
+                }
         }
         .padding(.vertical, 4)
+    }
+    
+    private var priorityColor: Color {
+        switch todo.priority {
+        case .high: return .red
+        case .medium: return .orange
+        case .low: return .clear
+        }
     }
 }

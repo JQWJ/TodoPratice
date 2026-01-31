@@ -56,7 +56,7 @@ final class TodoListViewModel: ObservableObject {
     
     var visibleTodos: [TodoItem] {
         todos
-        // 완료,미완료 필터
+        // 필터
             .filter { todo in
                 switch filter {
                 case .all:
@@ -67,13 +67,15 @@ final class TodoListViewModel: ObservableObject {
                     return todo.isDone
                 }
             }
+        // 검색
             .filter {
                 searchText.isEmpty ||
                 $0.title.localizedCaseInsensitiveContains(searchText)
             }
+        // 정렬 고도화
             .sorted { lhs, rhs in
                 if lhs.isDone != rhs.isDone {
-                    return lhs.isDone == false
+                    return !lhs.isDone // 미완료 먼저
                 }
                 
                 if lhs.priority != rhs.priority {
@@ -131,12 +133,6 @@ final class TodoListViewModel: ObservableObject {
     func toggledone(_ todo: TodoItem) {
             guard let index = todos.firstIndex(where: {$0.id == todo.id }) else {return}
             todos[index].isDone.toggle()
-        todos.sort { a, b in
-            if a.isDone != b.isDone {
-                return !a.isDone
-            }
-            return a.priority.rawValue < b.priority.rawValue
-        }
     }
 // 위 펑션은 RowView에서 바인딩이 아닌 뷰모델로 받아왔을 때 사용하는 함수
 }
