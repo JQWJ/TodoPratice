@@ -18,7 +18,7 @@ struct TodoRowView: View {
             // 우선순위 컬러 바
             Rectangle()
                 .fill(priorityColor)
-                .frame(width: 4)
+                .frame(width: 8)
                 .cornerRadius(2)
             
             Text(todo.title)
@@ -33,14 +33,20 @@ struct TodoRowView: View {
                     onToggle()
                 }
         }
+        .opacity(todo.isDone ? 0.5 : 1)
+        .scaleEffect(todo.isDone ? 0.97 : 1)
+        .animation(.easeInOut(duration: 0.2), value: todo.isDone)
         .padding(.vertical, 4)
     }
     
     private var priorityColor: Color {
         switch todo.priority {
-        case .high: return .red
-        case .medium: return .orange
-        case .low: return .clear
+        case .high:
+            return .red
+        case .medium:
+            return .orange
+        case .low:
+            return .clear
         }
     }
 }

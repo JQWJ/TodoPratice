@@ -23,42 +23,31 @@ struct TodoListView: View {
                 }
                 .pickerStyle(.segmented)
                 .padding(.horizontal)
-
-                if !viewModel.activeTodos.isEmpty {
-                    Section("미완료") {
-                        ForEach(viewModel.activeTodos) { todo in
-                            TodoRowView(todo: todo) {
-                                viewModel.toggledone(todo)
-                            }
-                        }
-                    }
-                }
                 
-                if !viewModel.completedTodos.isEmpty {
-                    Section {
-                        if viewModel.isCompletedExpanded {
-                            ForEach(viewModel.completedTodos) { todo in
+                ForEach(viewModel.visibleTodos) { todo in
+
+                            if !todo.isDone {
                                 TodoRowView(todo: todo) {
-                                    viewModel.toggledone(todo)
+                                    withAnimation(.easeOut) {
+                                        viewModel.toggledone(todo)
+                                    }
+                                }
+                            } else {
+
+                                if viewModel.isCompletedExpanded {
+                                    TodoRowView(todo: todo) {
+                                        withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+                                            viewModel.toggledone(todo)
+                                        }
+                                    }
                                 }
                             }
                         }
-                    } header: {
-                        Button {
-                            withAnimation(.easeInOut) {
-                                viewModel.isCompletedExpanded.toggle()
-                            }
-                        } label: {
-                            HStack {
-                                Text("완료 \(viewModel.completedTodos.count)")
-                                Spacer()
-                                Image(systemName: viewModel.isCompletedExpanded ? "chevron.down" : "chevron.right")
-                            }
-                        }
+                    .onMove { from, to in
+                        viewModel.moveActive(from: from, to: to)
                     }
-                }
             }
-            .animation(.easeInOut(duration: 0.25), value: viewModel.todos)
+            .animation(.easeInOut(duration: 0.25), value: viewModel.visibleTodos)
             .listStyle(.plain)
             .navigationTitle("Todo")
             .searchable(text: $viewModel.searchText, prompt: "할 일 검색")
@@ -72,7 +61,11 @@ struct TodoListView: View {
                         AddTodoView(viewModel: viewModel)
                     }
                 }
+                ToolbarItem(placement: .topBarLeading) {
+                    EditButton()
+                }
             }
         }
     }
 }
+
