@@ -20,6 +20,9 @@ struct TodoListView: View {
                         Text(filter.rawValue)
                             .tag(filter)
                     }
+        //                    Button("reset") {
+        //                        viewModel.resetTodos()
+        //                    }
                 }
                 .pickerStyle(.segmented)
                 .padding(.horizontal)

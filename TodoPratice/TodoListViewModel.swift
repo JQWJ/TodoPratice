@@ -137,6 +137,10 @@ final class TodoListViewModel: ObservableObject {
         }
     }
 // 위 펑션은 RowView에서 바인딩이 아닌 뷰모델로 받아왔을 때 사용하는 함수
+    func resetTodos() {
+        UserDefaults.standard.removeObject(forKey: saveKey)
+        todos = []
+    }
     
     func moveActive(from source: IndexSet, to destination: Int) {
 
