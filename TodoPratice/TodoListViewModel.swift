@@ -145,7 +145,6 @@ final class TodoListViewModel: ObservableObject {
     func moveActive(from source: IndexSet, to destination: Int) {
 
         var active = visibleTodos.filter { !$0.isDone }
-        var completed = visibleTodos.filter { $0.isDone }
 
         // 미완료 안에서 움직이는 경우
         if destination <= active.count {
@@ -158,7 +157,7 @@ final class TodoListViewModel: ObservableObject {
             }
 
         }
-        // 완료 영역으로 드래그한 경우 👉 완료 처리
+        // 완료 영역으로 드래그한 경우 완료 처리
         else {
             for index in source {
                 let todo = active[index]
